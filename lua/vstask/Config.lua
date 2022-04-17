@@ -1,7 +1,7 @@
---- Decodes from JSON.
----
----@param data string Data to decode
----@returns table json_obj Decoded JSON object
+--  Decodes from JSON.
+--
+-- @param data string Data to decode
+-- @returns table json_obj Decoded JSON object
 local json_decode = function(data)
   local ok, result = pcall(vim.fn.json_decode, vim.fn.readfile(data))
   if ok then
@@ -15,9 +15,9 @@ end
 ---@param path string JSON file path
 ---@return boolean is_error if error then true
 local load_setting_json = function(path)
-  vim.validate {
-    path = { path, 's' },
-  }
+  vim.validate({
+    path = { path, "s" },
+  })
 
   if vim.fn.filereadable(path) == 0 then
     print("Invalid file path.")
@@ -33,5 +33,5 @@ local load_setting_json = function(path)
 end
 
 return {
-  load_json = load_setting_json
+  load_json = load_setting_json,
 }

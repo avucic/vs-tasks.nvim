@@ -2,11 +2,11 @@
 -- @param s string to split
 -- @param delimiter substring to split on
 function Split(s, delimiter)
-  local result = {};
-  for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-    table.insert(result, match);
+  local result = {}
+  for match in (s .. delimiter):gmatch("(.-)" .. delimiter) do
+    table.insert(result, match)
   end
-  return result;
+  return result
 end
 
 local get_relative_file = function()
@@ -37,7 +37,6 @@ local get_relative_path = function(workspaceFolder, filePath)
   local relativePath = filePath:gsub(workspaceFolder, "")
   return relativePath, filename
 end
-
 
 -- get the current opened files base name (without extension)
 local get_current_file_basename_no_extension = function()
@@ -98,8 +97,6 @@ local get_exec_path = function()
   return vim.fn.executable()
 end
 
-
-
 local get_file = function()
   return get_filename(vim.fn.bufname())
 end
@@ -132,21 +129,20 @@ local get_relative_file_dirname = function()
 end
 
 return {
-  [ "workspaceFolder" ] = vim.fn.cwd,
-  [ "workspaceFolderBasename" ] = get_workspacefolder_basename,
-  [ "file" ] = get_file,
-  [ "fileWorkspaceFolder" ] = get_file_workspace_folder,
-  [ "relativeFile" ] = get_relative_file,
-  [ "relativeFileDirname" ] = get_relative_file_dirname,
-  [ "fileBasename" ] = get_current_file_basename,
-  [ "fileBasenameNoExtension" ] = get_current_file_basename_no_extension,
-  [ "fileDirname" ] = get_current_file_dirname,
-  [ "fileExtname" ] = get_current_file_extension,
-  [ "cwd" ] = get_current_dir,
-  [ "lineNumber" ] = get_current_line_number,
-  [ "selectedText" ] = get_selected_text,
-  [ "execPath" ] = get_exec_path,
-  [ "defaultBuildTask" ] = nil,
-  [ "pathSeparator" ] = get_path_seperator
+  ["workspaceFolder"] = vim.fn.cwd,
+  ["workspaceFolderBasename"] = get_workspacefolder_basename,
+  ["file"] = get_file,
+  ["fileWorkspaceFolder"] = get_file_workspace_folder,
+  ["relativeFile"] = get_relative_file,
+  ["relativeFileDirname"] = get_relative_file_dirname,
+  ["fileBasename"] = get_current_file_basename,
+  ["fileBasenameNoExtension"] = get_current_file_basename_no_extension,
+  ["fileDirname"] = get_current_file_dirname,
+  ["fileExtname"] = get_current_file_extension,
+  ["cwd"] = get_current_dir,
+  ["lineNumber"] = get_current_line_number,
+  ["selectedText"] = get_selected_text,
+  ["execPath"] = get_exec_path,
+  ["defaultBuildTask"] = nil,
+  ["pathSeparator"] = get_path_seperator,
 }
-

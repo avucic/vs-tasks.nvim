@@ -1,18 +1,17 @@
-local actions = require('telescope.actions')
-local state  = require('telescope.actions.state')
-local finders = require('telescope.finders')
-local pickers = require('telescope.pickers')
-local sorters = require('telescope.sorters')
+local actions = require("telescope.actions")
+local state = require("telescope.actions.state")
+local finders = require("telescope.finders")
+local pickers = require("telescope.pickers")
+local sorters = require("telescope.sorters")
 
-local Parse = require('vstask.Parse')
+local Parse = require("vstask.Parse")
 local Command_handler = nil
 
-
-local process_command = function(command)
+local process_command = function(command, direction)
   if Command_handler ~= nil then
-    Command_handler(command)
+    Command_handler(command, direction)
   else
-    vim.cmd('terminal ' .. command)
+    vim.cmd("terminal " .. command)
   end
 end
 
@@ -29,13 +28,13 @@ local function inputs(opts)
     return
   end
 
-  local  inputs_formatted = {}
+  local inputs_formatted = {}
   local selection_list = {}
 
   for _, input_dict in pairs(input_list) do
     local add_current = ""
     if input_dict["value"] ~= "" then
-        add_current = " [" .. input_dict["value"] .. "] "
+      add_current = " [" .. input_dict["value"] .. "] "
     end
     local current_task = input_dict["id"] .. add_current .. " => " .. input_dict["description"]
     table.insert(inputs_formatted, current_task)
@@ -43,13 +42,12 @@ local function inputs(opts)
   end
 
   pickers.new(opts, {
-    prompt_title = 'Inputs',
-    finder    = finders.new_table {
-      results = inputs_formatted
-    },
+    prompt_title = "Inputs",
+    finder = finders.new_table({
+      results = inputs_formatted,
+    }),
     sorter = sorters.get_generic_fuzzy_sorter(),
     attach_mappings = function(prompt_bufnr, map)
-
       local start_task = function()
         local selection = state.get_selected_entry(prompt_bufnr)
         actions.close(prompt_bufnr)
@@ -58,12 +56,11 @@ local function inputs(opts)
         Parse.Set(input)
       end
 
-
-      map('i', '<CR>', start_task)
-      map('n', '<CR>', start_task)
+      map("i", "<CR>", start_task)
+      map("n", "<CR>", start_task)
 
       return true
-    end
+    end,
   }):find()
 end
 
@@ -76,7 +73,8 @@ local function tasks(opts)
     return
   end
 
-  local  tasks_formatted = {}
+  local tasks_formatted = {}
+  -- local Terminal = require("toggleterm.terminal").Terminal
 
   for i = 1, #task_list do
     local current_task = task_list[i]["label"]
@@ -84,20 +82,20 @@ local function tasks(opts)
   end
 
   pickers.new(opts, {
-    prompt_title = 'Tasks',
-    finder    = finders.new_table {
-      results = tasks_formatted
-    },
+    prompt_title = "Tasks",
+    finder = finders.new_table({
+      results = tasks_formatted,
+    }),
     sorter = sorters.get_generic_fuzzy_sorter(),
     attach_mappings = function(prompt_bufnr, map)
-
       local start_task = function()
         local selection = state.get_selected_entry(prompt_bufnr)
         actions.close(prompt_bufnr)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        process_command(command)
+        process_command(command, { direction = "float" })
+        vim.cmd("normal! G")
       end
 
       local start_in_vert = function()
@@ -106,9 +104,8 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        vim.cmd('vsplit')
-        process_command(command)
-        vim.cmd('normal! G')
+        process_command(command, { direction = "vertical" })
+        vim.cmd("normal! G")
       end
 
       local start_in_split = function()
@@ -117,9 +114,8 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        vim.cmd('split')
-        process_command(command)
-        vim.cmd('normal! G')
+        process_command(command, { direction = "horizontal" })
+        vim.cmd("normal! G")
       end
 
       local start_in_tab = function()
@@ -128,26 +124,27 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        vim.cmd('tabnew')
-        process_command(command)
-        vim.cmd('normal! G')
+        vim.cmd("tabnew")
+        process_command(command, { direction = "float" })
+        vim.cmd("normal! G")
       end
 
-      map('i', '<CR>', start_task)
-      map('n', '<CR>', start_task)
-      map('i', '<C-v>', start_in_vert)
-      map('n', '<C-v>', start_in_vert)
-      map('i', '<C-p>', start_in_split)
-      map('n', '<C-p>', start_in_split)
-      map('i', '<C-t>', start_in_tab)
-      map('n', '<C-t>', start_in_tab)
+      map("i", "<CR>", start_task)
+      map("n", "<CR>", start_task)
+      map("i", "<C-v>", start_in_vert)
+      map("n", "<C-v>", start_in_vert)
+      map("i", "<C-s>", start_in_split)
+      map("n", "<C-s>", start_in_split)
+      map("i", "<C-t>", start_in_tab)
+      map("n", "<C-t>", start_in_tab)
       return true
-    end
+    end,
   }):find()
 end
 
 return {
   Tasks = tasks,
   Inputs = inputs,
+  -- Launch = launch,
   Set_command_handler = set_command_handler,
 }

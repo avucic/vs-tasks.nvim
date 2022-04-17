@@ -1,15 +1,38 @@
 local Inputs = {}
 local Config = require("vstask.Config")
-local Predefined = require('vstask.Predefined')
+local Predefined = require("vstask.Predefined")
+
+Launch = {}
 
 local function setContains(set, key)
-    return set[key] ~= nil
+  return set[key] ~= nil
+end
+
+local function file_exists(name)
+  local f = io.open(name, "r")
+  if f ~= nil then
+    io.close(f)
+    return true
+  else
+    return false
+  end
+end
+
+local function get_launch()
+  local path = vim.fn.getcwd() .. "/.vscode/launch.json"
+  if not file_exists(path) then
+    return {}
+  end
+
+  local launch = Config.load_json(path)
+  Launch = launch["configurations"]
+  return Launch
 end
 
 local function get_inputs()
-  local path = vim.fn.getcwd() .."/.vscode/tasks.json"
+  local path = vim.fn.getcwd() .. "/.vscode/tasks.json"
   local config = Config.load_json(path)
-  if (not setContains(config, "inputs")) then
+  if not setContains(config, "inputs") then
     return Inputs
   end
   local inputs = config["inputs"]
@@ -25,7 +48,7 @@ local function get_inputs()
 end
 
 local function get_tasks()
-  local path = vim.fn.getcwd() .."/.vscode/tasks.json"
+  local path = vim.fn.getcwd() .. "/.vscode/tasks.json"
   get_inputs()
   local tasks = Config.load_json(path)
   Tasks = tasks["tasks"]
@@ -70,9 +93,9 @@ end
 local function get_predefined_variables(command)
   local predefined_vars = {}
   local count = 0
-  for defined_var, _ in pairs(Predefined ) do
+  for defined_var, _ in pairs(Predefined) do
     local match_pattern = "${" .. defined_var .. "}"
-    for w in string.gmatch(command,  match_pattern) do
+    for w in string.gmatch(command, match_pattern) do
       if w ~= nil then
         for word in string.gmatch(command, "%{(%a+)}") do
           table.insert(predefined_vars, word)
@@ -125,6 +148,7 @@ end
 return {
   replace = replace_vars_in_command,
   Inputs = get_inputs,
+  Launch = get_launch,
   Tasks = get_tasks,
   Set = load_input_variable,
 }
