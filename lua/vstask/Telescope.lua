@@ -95,7 +95,6 @@ local function tasks(opts)
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
         process_command(command, { direction = "float" })
-        vim.cmd("normal! G")
       end
 
       local start_in_vert = function()
@@ -105,7 +104,6 @@ local function tasks(opts)
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
         process_command(command, { direction = "vertical" })
-        vim.cmd("normal! G")
       end
 
       local start_in_split = function()
@@ -115,7 +113,6 @@ local function tasks(opts)
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
         process_command(command, { direction = "horizontal" })
-        vim.cmd("normal! G")
       end
 
       local start_in_tab = function()
@@ -126,7 +123,6 @@ local function tasks(opts)
         command = Parse.replace(command)
         vim.cmd("tabnew")
         process_command(command, { direction = "float" })
-        vim.cmd("normal! G")
       end
 
       map("i", "<CR>", start_task)
