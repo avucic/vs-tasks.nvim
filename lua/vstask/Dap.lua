@@ -13,7 +13,13 @@ function M.setup()
     return
   end
 
-  dap.configurations.ruby = launch_list
+  for _, tbl in pairs(launch_list) do
+    local type = tbl["type"]
+    if dap.configurations[type] == nil then
+      dap.configurations[type] = {}
+    end
+    table.insert(dap.configurations[type], tbl)
+  end
 end
 
 return M
