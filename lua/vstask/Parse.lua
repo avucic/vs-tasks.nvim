@@ -21,6 +21,7 @@ end
 local function get_launch()
   local path = vim.fn.getcwd() .. "/.vscode/launch.json"
   if not file_exists(path) then
+    vim.notify("Launch tasks not exists", "error")
     return {}
   end
 
@@ -31,6 +32,10 @@ end
 
 local function get_inputs()
   local path = vim.fn.getcwd() .. "/.vscode/tasks.json"
+  if not file_exists(path) then
+    vim.notify("Tasks not exists", "error")
+    return {}
+  end
   local config = Config.load_json(path)
   if not setContains(config, "inputs") then
     return Inputs
@@ -49,6 +54,10 @@ end
 
 local function get_tasks()
   local path = vim.fn.getcwd() .. "/.vscode/tasks.json"
+  if not file_exists(path) then
+    vim.notify("Tasks not exists", "error")
+    return {}
+  end
   get_inputs()
   local tasks = Config.load_json(path)
   Tasks = tasks["tasks"]
