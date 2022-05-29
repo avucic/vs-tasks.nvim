@@ -13,7 +13,7 @@ function ToggleTerm_process(command, opts)
     vim.cmd([[TermExec cmd="cd ]] .. cwd .. [["]])
   end
 
-  vim.cmd([[TermExec cmd="]] .. command .. [["]])
+  vim.cmd([[TermExec cmd=']] .. command .. [[']])
 end
 
 return { Process = ToggleTerm_process }

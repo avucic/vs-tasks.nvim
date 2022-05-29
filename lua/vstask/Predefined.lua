@@ -129,7 +129,7 @@ local get_relative_file_dirname = function()
   return relativeFileDirname
 end
 
-local get_relative_file_parent_path = function()
+local get_absolute_directory_path = function()
   local sep = get_path_seperator()
   local filePath = get_relative_file()
   local relativeFileParentDirname = Split(filePath, get_current_file_basename())[1]
@@ -138,7 +138,50 @@ local get_relative_file_parent_path = function()
     relativeFileParentDirname = relativeFileParentDirname:sub(1, -2)
   end
 
-  return relativeFileParentDirname
+  return vim.fn.getcwd() .. "/" .. relativeFileParentDirname
+end
+
+-- https://github.com/ray-x/go.nvim/blob/master/lua/go/ginkgo.lua#L55-L64
+local function find_ginko_context(lines, tag)
+  local describe
+  local pat = tag .. [[%(%".*%",%sfunc]]
+  local despat = [[%(%".*%"]]
+  for i = #lines, 1, -1 do
+    local line = lines[i]
+    local fs, fe = string.find(line, pat)
+    if fs then
+      line = string.sub(line, fs + string.len(tag), fe)
+      fs, fe = string.find(line, despat)
+      if fs ~= nil then
+        if fe - fs <= 2 then
+          return nil
+        end
+        describe = line:sub(fs + 2, fe - 1)
+        return describe
+      end
+    end
+  end
+  return nil
+end
+
+local function find_ginko_parent_context(lines)
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  row, col = row, col + 1
+
+  local fnum = row - 30
+  if fnum < 0 then
+    fnum = 0
+  end
+  local lines = vim.api.nvim_buf_get_lines(0, fnum, row + 1, true)
+
+  local describe = find_ginko_context(lines, "It")
+    or find_ginko_context(lines, "Context")
+    or find_ginko_context(lines, "Describe")
+  if not describe then
+    return ""
+  end
+
+  return describe
 end
 
 return {
@@ -148,7 +191,7 @@ return {
   ["fileWorkspaceFolder"] = get_file_workspace_folder,
   ["relativeFile"] = get_relative_file,
   ["relativeFileDirname"] = get_relative_file_dirname,
-  ["relativeFileParentPath"] = get_relative_file_parent_path,
+  ["absoluteDirectoryPath"] = get_absolute_directory_path,
   ["fileBasename"] = get_current_file_basename,
   ["fileBasenameNoExtension"] = get_current_file_basename_no_extension,
   ["fileDirname"] = get_current_file_dirname,
@@ -159,4 +202,5 @@ return {
   ["execPath"] = get_exec_path,
   ["defaultBuildTask"] = nil,
   ["pathSeparator"] = get_path_seperator,
+  ["ginkgoParentSpecContext"] = find_ginko_parent_context,
 }
