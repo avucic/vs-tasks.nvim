@@ -125,16 +125,30 @@ local get_relative_file_dirname = function()
   if relativeFileDirname:sub(-1) == sep then
     relativeFileDirname = relativeFileDirname:sub(1, -2)
   end
+
   return relativeFileDirname
 end
 
+local get_relative_file_parent_path = function()
+  local sep = get_path_seperator()
+  local filePath = get_relative_file()
+  local relativeFileParentDirname = Split(filePath, get_current_file_basename())[1]
+
+  if relativeFileParentDirname:sub(-1) == sep then
+    relativeFileParentDirname = relativeFileParentDirname:sub(1, -2)
+  end
+
+  return relativeFileParentDirname
+end
+
 return {
-  ["workspaceFolder"] = vim.fn.cwd,
+  ["workspaceFolder"] = vim.fn.getcwd,
   ["workspaceFolderBasename"] = get_workspacefolder_basename,
   ["file"] = get_file,
   ["fileWorkspaceFolder"] = get_file_workspace_folder,
   ["relativeFile"] = get_relative_file,
   ["relativeFileDirname"] = get_relative_file_dirname,
+  ["relativeFileParentPath"] = get_relative_file_parent_path,
   ["fileBasename"] = get_current_file_basename,
   ["fileBasenameNoExtension"] = get_current_file_basename_no_extension,
   ["fileDirname"] = get_current_file_dirname,

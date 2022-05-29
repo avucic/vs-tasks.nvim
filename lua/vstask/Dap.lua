@@ -1,6 +1,14 @@
 local M = {}
 
+local dap_loaded = false
+
 function M.setup()
+  if dap_loaded then
+    return
+  end
+
+  dap_loaded = true
+
   local ok, dap = pcall(require, "dap")
   if not ok then
     return

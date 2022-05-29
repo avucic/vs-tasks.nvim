@@ -6,6 +6,7 @@ local sorters = require("telescope.sorters")
 
 local Parse = require("vstask.Parse")
 local Command_handler = nil
+-- local Dap = require("vstask.Dap")
 
 local process_command = function(command, direction)
   if Command_handler ~= nil then
@@ -94,7 +95,13 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        process_command(command, { direction = "float" })
+
+        local cwd = task_list[selection.index]["cwd"]
+        if cwd then
+          cwd = Parse.replace(cwd)
+        end
+
+        process_command(command, { direction = "float", cwd = cwd })
       end
 
       local start_in_vert = function()
@@ -103,7 +110,13 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        process_command(command, { direction = "vertical" })
+
+        local cwd = task_list[selection.index]["cwd"]
+        if cwd then
+          cwd = Parse.replace(cwd)
+        end
+
+        process_command(command, { direction = "vertical", cwd = cwd })
       end
 
       local start_in_split = function()
@@ -112,7 +125,12 @@ local function tasks(opts)
 
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
-        process_command(command, { direction = "horizontal" })
+
+        local cwd = task_list[selection.index]["cwd"]
+        if cwd then
+          cwd = Parse.replace(cwd)
+        end
+        process_command(command, { direction = "horizontal", cwd = cwd })
       end
 
       local start_in_tab = function()
@@ -122,7 +140,12 @@ local function tasks(opts)
         local command = task_list[selection.index]["command"]
         command = Parse.replace(command)
         vim.cmd("tabnew")
-        process_command(command, { direction = "float" })
+
+        local cwd = task_list[selection.index]["cwd"]
+        if cwd then
+          cwd = Parse.replace(cwd)
+        end
+        process_command(command, { direction = "float", cwd = cwd })
       end
 
       map("i", "<CR>", start_task)
@@ -141,6 +164,5 @@ end
 return {
   Tasks = tasks,
   Inputs = inputs,
-  -- Launch = launch,
   Set_command_handler = set_command_handler,
 }

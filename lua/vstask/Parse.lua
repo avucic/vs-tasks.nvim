@@ -37,6 +37,11 @@ local function get_inputs()
     return {}
   end
   local config = Config.load_json(path)
+
+  if not config then
+    return {}
+  end
+
   if not setContains(config, "inputs") then
     return Inputs
   end
@@ -60,6 +65,11 @@ local function get_tasks()
   end
   get_inputs()
   local tasks = Config.load_json(path)
+  if not tasks then
+    vim.notify("Tasks not exists", "error")
+    return {}
+  end
+
   Tasks = tasks["tasks"]
   return Tasks
 end

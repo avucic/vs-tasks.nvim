@@ -6,6 +6,13 @@ function ToggleTerm_process(command, opts)
   else
     vim.cmd("ToggleTerm direction=float")
   end
+
+  local cwd = opts.cwd
+
+  if cwd ~= nil and cwd ~= "" then
+    vim.cmd([[TermExec cmd="cd ]] .. cwd .. [["]])
+  end
+
   vim.cmd([[TermExec cmd="]] .. command .. [["]])
 end
 

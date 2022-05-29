@@ -12,7 +12,9 @@ function M.setup(opts)
   elseif opts.terminal ~= nil and opts.terminal == "toggleterm" then
     M.Telescope.Set_command_handler(require("vstask.ToggleTerm").Process)
   end
+end
 
+function M.load_dap_tasks()
   M.Dap.setup()
 end
 
